@@ -3,6 +3,7 @@ package com.thnkld.burungkepak.android;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -27,9 +28,14 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 	// sign in flow, to know you should not attempt
 	// to connect on onStart()
 
+	Toast connectingToast;
 
-	int pendingScore;
-	boolean pendingOpenLB;
+	static class pending {
+		int score;
+		boolean openLb;
+		String lbid;
+	}
+	pending pending = new pending();
 
 	public Main() {
 		_game = new Game(this);
@@ -67,29 +73,32 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 		super.onStop();
 	}
 
-	void openLB() {
-		startActivityForResult(Games.Leaderboards.getLeaderboardIntent(client, "CggIlLDgtRUQAhAG"), REQUEST_LEADERBOARD);
+	void openLB(final String lbid) {
+		startActivityForResult(Games.Leaderboards.getLeaderboardIntent(client, lbid), REQUEST_LEADERBOARD);
 	}
 
-	private void submitScore(int score) {
-		Games.Leaderboards.submitScore(client, "CggIlLDgtRUQAhAG", score, "s0__");
+	private void submitScore(final String lbid, int score) {
+		Games.Leaderboards.submitScore(client, lbid, score, "s0__");
 	}
 
 	@Override
-	public void submitLeaderboardScore(final int score, boolean rankingButton) {
+	public void submitLeaderboardScore(final String lbid, final int score, boolean rankingButton) {
 		if (client.isConnected()) {
-			Log.d(TAG, "1");
-			submitScore(score);
+			submitScore(lbid, score);
 			if (rankingButton) {
-				Log.d(TAG, "2");
-				openLB();
+				openLB(lbid);
 			}
 		} else {
-			Log.d(TAG, "3");
-			pendingScore = score;
+			pending = new pending();
+			pending.lbid = lbid;
+			pending.score = score;
 			if (rankingButton) {
-				Log.d(TAG, "4");
-				pendingOpenLB = true;
+				if (connectingToast == null) {
+					connectingToast = Toast.makeText(this, "still trying to connect…", Toast.LENGTH_SHORT);
+				}
+				connectingToast.show();
+
+				pending.openLb = true;
 				client.connect();
 			}
 		}
@@ -98,14 +107,13 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 	@Override
 	public void onConnected(final Bundle bundle) {
 		Log.d(TAG, "@@onConnected");
-		if (pendingScore != 0) {
-			submitScore(pendingScore);
+		if (pending != null) {
+			submitScore(pending.lbid, pending.score);
+			if (pending.openLb) {
+				openLB(pending.lbid);
+			}
 		}
-		pendingScore = 0;
-		if (pendingOpenLB) {
-			openLB();
-			pendingOpenLB = false;
-		}
+		pending = null;
 	}
 
 	@Override
@@ -117,14 +125,13 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 	public void onConnectionFailed(final ConnectionResult connectionResult) {
 		Log.d(TAG, "@@onConnectionFailed");
 		if (connectionResult.hasResolution()) {
-			Log.d(TAG, "5");
 			try {
 				connectionResult.startResolutionForResult(this, REQUEST_SIGN_IN);
 			} catch (Exception e) {
-				Log.d(TAG, "7");
+				Log.d(TAG, "exception in resolution", e);
 			}
 		} else {
-			Log.d(TAG, "6");
+			Log.d(TAG, "no resolution");
 		}
 	}
 }

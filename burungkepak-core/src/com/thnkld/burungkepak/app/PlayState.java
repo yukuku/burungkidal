@@ -1,5 +1,6 @@
 package com.thnkld.burungkepak.app;
 
+import com.badlogic.gdx.math.Interpolation;
 import org.flixel.FlxBasic;
 import org.flixel.FlxButton;
 import org.flixel.FlxG;
@@ -17,11 +18,31 @@ import java.util.Random;
 public class PlayState extends FlxState {
 
 	final int VGERAK = 140;
-	final int MUNCULTIAP = 100;
+	final float MUNCULPIPATIAP = 1.66666667f;
+	final int BUKAAN = 90;
+
+	enum LB {
+		NORMAL("CggIlLDgtRUQAhAG"),
+		BABY("CggIlLDgtRUQAhAL"),
+		KETUK("CggIlLDgtRUQAhAM"),;
+		final String id;
+		LB(final String id) {
+			this.id = id;
+		}
+	}
+
+	static class Flags {
+		boolean mode_gampang_geser = false;
+		boolean mode_gampang_pipa_kabur = false;
+		boolean mode_latihan_ketukan = false;
+	}
+
+	LB lb;
+	Flags flags;
 
 	FlxGroup ikans = new FlxGroup();
 	Ikan ikan;
-	int fasepipa = 0;
+	float fasepipa = 0;
 	float faseanimasi = 0;
 	float fasesiap = 0;
 	FlxGroup floortiles = new FlxGroup();
@@ -32,6 +53,32 @@ public class PlayState extends FlxState {
 	FlxSprite judulsplash = new FlxSprite(0, 0);
 	FlxButton bUlang;
 	FlxButton bLiatRanking;
+	PlainButton bBaby;
+	BouncingButton bKetuk;
+
+	static class BouncingButton extends PlainButton {
+		Interpolation interp;
+		float origY;
+		float elapsed;
+
+		void bounce() {
+			interp = new Interpolation.BounceIn(3);
+			origY = y;
+			elapsed = 0;
+		}
+
+		@Override public void update() {
+			super.update();
+			if (interp != null) {
+				elapsed += FlxG.elapsed;
+				float u = interp.apply(elapsed / 2f);
+				this.y = origY + -400 * u;
+				if (elapsed > 2f) {
+					interp = null;
+				}
+			}
+		}
+	}
 
 	enum Stet { siap, animasi, beneran, mati };
 	Stet stet = Stet.siap;
@@ -40,9 +87,7 @@ public class PlayState extends FlxState {
 	public void create() {
 		FlxG.debug = true;
 
-		FlxG.mouse.hide();
-
-        FlxSprite bg = new FlxSprite(0, 0);
+		FlxSprite bg = new FlxSprite(0, 0);
 		bg.loadGraphic("images/bg.png");
 		bg.scrollFactor = new FlxPoint();
 		add(bg);
@@ -71,8 +116,7 @@ public class PlayState extends FlxState {
 		bUlang = new FlxButton(80, 100, "Ulang", new IFlxButton() {
 			@Override
 			public void callback() {
-				mulaisiap();
-				stet = Stet.siap;
+				FlxG.switchState(new PlayState());
 			}
 		});
 		add(bUlang);
@@ -80,22 +124,58 @@ public class PlayState extends FlxState {
 		bLiatRanking = new FlxButton(80, 150, "Ranking", new IFlxButton() {
 			@Override
 			public void callback() {
-				Game.gg.submitLeaderboardScore(FlxG.score, true);
+				Game.gg.submitLeaderboardScore(lb.id, FlxG.score, true);
 			}
 		});
 		add(bLiatRanking);
 
+		bBaby = new PlainButton();
+		bBaby.loadGraphic("images/button_baby.png");
+		bBaby.x = 190;
+		bBaby.y = 295;
+		add(bBaby);
+
+		bKetuk = new BouncingButton();
+		bKetuk.loadGraphic("images/button_ketuk.png", true, false, 16, 16);
+		bKetuk.addAnimation("normal", new int[] {0, 1}, 1);
+		bKetuk.play("normal");
+		bKetuk.x = 215;
+		bKetuk.y = 295;
+		add(bKetuk);
+
 		mulaisiap();
 	}
 
+	void setupmode_normal() {
+		lb = LB.NORMAL;
+		flags = new Flags() {{
+		}};
+	}
+
+	void setupmode_baby() {
+		lb = LB.BABY;
+		flags = new Flags() {{
+			mode_gampang_pipa_kabur = true;
+		}};
+	}
+
+	void setupmode_ketuk() {
+		lb = LB.KETUK;
+		flags = new Flags() {{
+			mode_latihan_ketukan = true;
+		}};
+	}
+
 	void mulaisiap() {
-		FlxG.mouse.hide();
+		FlxG.mouse.show();
 
 		setAndDisplayScore(0);
 
 		fasesiap = 0;
 		bUlang.visible = false;
 		bLiatRanking.visible = false;
+		bBaby.visible = true;
+		bKetuk.visible = true;
 
 		flooroffset.velocity.x = -50;
 
@@ -114,13 +194,19 @@ public class PlayState extends FlxState {
 
 		add(judulsplash);
 		add(tPetunjuk);
+
+		setupmode_normal();
 	}
 
 	void mulaianimasi() {
+		FlxG.mouse.hide();
+
 		faseanimasi = 0;
 		ikan.velocity.x = 200;
 		ikan.acceleration.y = 1500;
 		ikan.play("terbangsantai");
+		bBaby.visible = false;
+		bKetuk.visible = false;
 		remove(judulsplash);
 		remove(tPetunjuk);
 	}
@@ -142,8 +228,8 @@ public class PlayState extends FlxState {
 
 		FlxG.mouse.show();
 
-		Game.gg.submitLeaderboardScore(FlxG.score, false);
-		FlxG.play("sounds/tabrakan.wav");
+		Game.gg.submitLeaderboardScore(lb.id, FlxG.score, false);
+		FlxG.play("sounds/mati.wav");
 
 		flooroffset.velocity.x = 0;
 		pipas.setAll("velocity", new FlxPoint(0, 0));
@@ -160,11 +246,13 @@ public class PlayState extends FlxState {
 	static Random r = new Random();
 
 	void tambahPipa() {
-		int bukaan = 90;
-		int offset = 20 + r.nextInt(FlxG.height - bukaan - 70);
+		int offset = 20 + r.nextInt(FlxG.height - BUKAAN - 70);
 
-		FlxSprite pipa1 = new FlxSprite();
-		pipa1.loadGraphic("images/pipa.png", false, false);
+		if (flags.mode_latihan_ketukan) {
+			offset = 99; // tengah2
+		}
+
+		Pipa pipa1 = new Pipa(1);
 		pipa1.x = -pipa1.width;
 		pipa1.y = offset - pipa1.height;
 		pipa1.velocity.x = VGERAK;
@@ -174,10 +262,9 @@ public class PlayState extends FlxState {
 		pipa1.immovable = true;
 		pipas.add(pipa1);
 
-		FlxSprite pipa2 = new FlxSprite();
-		pipa2.loadGraphic("images/pipa.png", false, false);
+		Pipa pipa2 = new Pipa(2);
 		pipa2.x = -pipa2.width;
-		pipa2.y = offset + bukaan;
+		pipa2.y = offset + BUKAAN;
 		pipa2.velocity.x = VGERAK;
 		pipa2.health = 0;
 		pipa2.immovable = true;
@@ -192,9 +279,25 @@ public class PlayState extends FlxState {
 
 		if (stet == Stet.siap) {
 			fasesiap += FlxG.elapsed;
-			if (any && fasesiap > 0.3f) {
-				stet = Stet.animasi;
-				mulaianimasi();
+
+			if (any) {
+				// check button press first
+				if (bBaby.isWithin(FlxG.mouse)) {
+					bBaby.angularVelocity = -400;
+					bBaby.velocity.x = -170;
+					bKetuk.visible = false;
+					setupmode_baby();
+				} else if (bKetuk.isWithin(FlxG.mouse)) {
+					bKetuk.bounce();
+					bBaby.visible = false;
+					setupmode_ketuk();
+				} else {
+					// no button press
+					if (fasesiap > 0.3f) {
+						stet = Stet.animasi;
+						mulaianimasi();
+					}
+				}
 			}
 		} else if (stet == Stet.animasi) {
 			if (any) {
@@ -236,7 +339,7 @@ public class PlayState extends FlxState {
 				ikan.loncat();
 			}
 
-			fasepipa += 1;
+			fasepipa += FlxG.elapsed;
 
 			// remove already on the left
 			for (final FlxBasic member : pipas.members) {
@@ -258,10 +361,55 @@ public class PlayState extends FlxState {
 				}
 			}
 
+			if (flags.mode_gampang_geser) {
+				for (final FlxBasic member : pipas.members) {
+					Pipa pipa = (Pipa) member;
+					if (pipa == null) continue;
+					if (ikan.x - (pipa.x + pipa.width) < 40) {
+						float y;
+						if (pipa.kind == 1) {
+							y = ikan.y - pipa.height - BUKAAN / 2;
+						} else {
+							y = ikan.y + ikan.height + BUKAAN / 2;
+						}
+						pipa.y = (pipa.y * 5 + y) / 6f;
+					}
+				}
+			}
+
+			if (flags.mode_gampang_pipa_kabur) {
+				for (final FlxBasic member : pipas.members) {
+					Pipa pipa = (Pipa) member;
+					if (pipa == null) continue;
+					if (ikan.x < (pipa.x + pipa.width + 20) && (ikan.x + ikan.width > pipa.x)) {
+						if (pipa.kind == 1) {
+							if (ikan.y - (pipa.y + pipa.height) < 20) {
+								pipa.scared();
+								float tujuY = ikan.y - pipa.height - 20;
+								pipa.y = (pipa.y * 2f + tujuY) / 3f;
+							}
+						} else { // pipa bawah
+							if (pipa.y - (ikan.y + ikan.height) < 20) {
+								pipa.scared();
+								float tujuY = ikan.y + ikan.height + 20;
+								pipa.y = (pipa.y * 1f + tujuY * 2f) / 3f;
+							}
+						}
+					}
+				}
+			}
+
 			// spawn more
-			if (fasepipa > MUNCULTIAP) {
-				tambahPipa();
-				fasepipa = 0;
+			if (flags.mode_latihan_ketukan) {
+				if (fasepipa >= 0.5f) {
+					tambahPipa();
+					fasepipa = 0;
+				}
+			} else {
+				if (fasepipa > MUNCULPIPATIAP) {
+					tambahPipa();
+					fasepipa = 0;
+				}
 			}
 		} else if (stet == Stet.mati) {
 			// ga ngapa2in

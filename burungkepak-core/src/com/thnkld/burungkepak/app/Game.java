@@ -8,7 +8,7 @@ public class Game extends FlxGame {
 	public static GG gg;
 
 	public interface GG {
-		void submitLeaderboardScore(int score, boolean rankingButton);
+		void submitLeaderboardScore(String leaderboardId, int score, boolean rankingButton);
 	}
 
     public Game(GG gg) {
