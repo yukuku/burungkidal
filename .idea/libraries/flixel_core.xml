@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="flixel-core">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-core/flixel-core.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-core/flixel-core-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

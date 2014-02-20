@@ -1,0 +1,11 @@
+# IDEA
+.idea/artifacts/
+.idea/workspace.xml
+out/
+
+# Java
+*.class
+
+# output app
+com.thnkld.burungkepak.ios.FlxIOSApplication/
+com.thnkld.burungkepak.ios.FlxIOSApplication.dSYM/

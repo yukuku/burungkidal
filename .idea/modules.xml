@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/burungkepak-android/burungkepak-android.iml" filepath="$PROJECT_DIR$/burungkepak-android/burungkepak-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/burungkepak-core/burungkepak-core.iml" filepath="$PROJECT_DIR$/burungkepak-core/burungkepak-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/burungkepak-desktop/burungkepak-desktop.iml" filepath="$PROJECT_DIR$/burungkepak-desktop/burungkepak-desktop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/burungkepak-robovm/burungkepak-robovm.iml" filepath="$PROJECT_DIR$/burungkepak-robovm/burungkepak-robovm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/flixel-core-raw/flixel-core.iml" filepath="$PROJECT_DIR$/libs/flixel-core-raw/flixel-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/google-play-services_lib/google-play-services_lib.iml" filepath="$PROJECT_DIR$/google-play-services_lib/google-play-services_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/playgameservices-ios/playgameservices-ios.iml" filepath="$PROJECT_DIR$/playgameservices-ios/playgameservices-ios.iml" />
+    </modules>
+  </component>
+</project>
+

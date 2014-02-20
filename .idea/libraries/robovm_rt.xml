@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="robovm-rt">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/robovm-rt/robovm-rt.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/robovm-rt/robovm-rt-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

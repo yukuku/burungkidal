@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="gdx-robovm">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/gdx-robovm/gdx-backend-robovm.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/gdx-robovm/gdx-backend-robovm-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

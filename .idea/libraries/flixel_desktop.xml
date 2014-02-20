@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="flixel-desktop">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-desktop/flixel-desktop.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-desktop/flixel-desktop-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

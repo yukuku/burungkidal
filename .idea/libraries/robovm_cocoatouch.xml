@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="robovm-cocoatouch">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/robovm-cocoatouch/robovm-cocoatouch.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/robovm-cocoatouch/robovm-cocoatouch-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="flixel-android">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-android/flixel-android.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/flixel-android/flixel-android-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
