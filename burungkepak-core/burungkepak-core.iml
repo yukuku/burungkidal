@@ -9,7 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="gdx-core" level="project" />
     <orderEntry type="module" module-name="flixel-core" exported="" />
-    <orderEntry type="library" exported="" name="gdx-freetype" level="project" />
   </component>
 </module>
 

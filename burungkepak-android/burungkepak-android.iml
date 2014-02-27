@@ -19,7 +19,6 @@
     <orderEntry type="library" name="flixel-android" level="project" />
     <orderEntry type="module" module-name="burungkepak-core" />
     <orderEntry type="module" module-name="google-play-services_lib" />
-    <orderEntry type="library" name="android-support-v4" level="project" />
     <orderEntry type="library" name="robovm-cocoatouch" level="project" />
   </component>
 </module>

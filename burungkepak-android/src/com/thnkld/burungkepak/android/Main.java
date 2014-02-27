@@ -35,7 +35,7 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 		boolean openLb;
 		String lbid;
 	}
-	pending pending = new pending();
+	pending pending;
 
 	public Main() {
 		_game = new Game(this);
@@ -93,10 +93,15 @@ public class Main extends AndroidApplication implements Game.GG, GoogleApiClient
 			pending.lbid = lbid;
 			pending.score = score;
 			if (rankingButton) {
-				if (connectingToast == null) {
-					connectingToast = Toast.makeText(this, "still trying to connect…", Toast.LENGTH_SHORT);
-				}
-				connectingToast.show();
+				postRunnable(new Runnable() {
+					@Override
+					public void run() {
+						if (connectingToast == null) {
+							connectingToast = Toast.makeText(Main.this, "still trying to connect…", Toast.LENGTH_SHORT);
+						}
+						connectingToast.show();
+					}
+				});
 
 				pending.openLb = true;
 				client.connect();
